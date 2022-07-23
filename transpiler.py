@@ -18,4 +18,7 @@ def convert_json_lisp_to_json(prog):
         # strings must get escaped "'some_string'"
         # add comma separator to arrays
         # objects should already have comma separators
+        # variables and object keys become strings
+        # list literals go from #[...] to ["#", ...]
+        # x.y.z becomes [".", "x", "y", "z"]
         pass
