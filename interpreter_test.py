@@ -23,9 +23,9 @@ class TestInterpreter(unittest.TestCase):
         self.assertEqual(result, [None])
 
     def test_add(self):
-        prog = """["#", ["+", 1, 1]]"""
+        prog = """["+", 1, 1]"""
         result = self.interpreter.exec(prog)
-        self.assertEqual(result, [2])
+        self.assertEqual(result, 2)
 
     def test_def(self):
         prog = """
@@ -50,6 +50,16 @@ class TestInterpreter(unittest.TestCase):
         self.assertEqual(result["x"], 2)
 
     def test_let(self):
-        prog = """["#", ["let", [["a", 1], ["b", 1]], ["+", "a", "b"]]]"""
+        prog = """["let", [["a", 1], ["b", 1]], ["+", "a", "b"]]"""
         result = self.interpreter.exec(prog)
-        self.assertEqual(result, [2])
+        self.assertEqual(result, 2)
+
+    def test_access(self):
+        prog = """[".", {"foo": {"bar": {"baz": 1}}}, "foo", "bar", "baz"]"""
+        result = self.interpreter.exec(prog)
+        self.assertEqual(result, 1)
+
+    @unittest.skip
+    def test_print(self):
+        prog = """["print", "'this is a test'", "'test'"]"""
+        self.interpreter.exec(prog)

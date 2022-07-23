@@ -34,6 +34,8 @@ class Interpreter:
                 args = [cnd, l[2], self.exec_json(l[3])]
         elif fn == "let":
             args = l[1:]
+        elif fn == ".":
+            args = [self.exec_json(l[1]), *l[2:]]
         else:
             args = [self.exec_json(a) for a in l[1:]]
         return f(*args)
