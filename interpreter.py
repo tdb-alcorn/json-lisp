@@ -23,7 +23,16 @@ class Interpreter:
     def exec_list(self, l):
         fn = l[0]
         f = self.lib[fn]
-        if fn == "def":  # handle special forms
+        # handle special forms
+        if fn == "def":
+            args = l[1:]
+        elif fn == "if":
+            cnd = self.exec_json(l[1])
+            if cnd:
+                args = [cnd, self.exec_json(l[2]), l[3]]
+            else:
+                args = [cnd, l[2], self.exec_json(l[3])]
+        elif fn == "let":
             args = l[1:]
         else:
             args = [self.exec_json(a) for a in l[1:]]
