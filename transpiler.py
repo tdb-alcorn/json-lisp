@@ -1,27 +1,11 @@
-def split(s, chars):
-    result = list()
-    tok = ""
-    for c in s:
-        if c in chars:
-            result.append(tok)
-            result.append(c)
-            tok = ""
-        else:
-            tok += c
-    return result
+from enum import Enum
 
 
-digits = "0123456789"
+digits = set("0123456789")
 letters_lower = "abcdefghijklmnopqrstuvwxyz"
 letters_upper = letters_lower.upper()
-variable_chars = set(letters_lower + letters_upper + "_")
-
-
-def convert_json_lisp_to_json(prog):
-    p = split(prog, ",[]\{\} \n\t")
-    result = list()
-    for tok in p:
-        result.append(convert_token)
+identifier_start_chars = set(letters_lower + letters_upper + "_")
+identifier_chars = set(list(identifier_start_chars) + list(digits) + ["."])
 
 
 symbols = set(",:#[]\{\}")
@@ -78,6 +62,47 @@ def tokenize(prog):
     return result
 
 
+class Token(Enum):
+    INVALID = 0
+    BRACKET = 1
+    BRACE = 2
+    COMMA = 3
+    COLON = 4
+    BOOLEAN = 5
+    NULL = 6
+    NUMBER = 7
+    STRING = 8
+    IDENTIFIER = 9
+
+
+def classify_token(tok):
+    if tok == "[" or tok == "]":
+        return Token.BRACKET
+    elif tok == "{" or tok == "}":
+        return Token.BRACE
+    elif tok == ",":
+        return Token.COMMA
+    elif tok == ":":
+        return Token.COLON
+    elif tok == "null":
+        return Token.NULL
+    elif tok == "false" or tok == "true":
+        return Token.BOOLEAN
+    elif tok[0] == '"' and tok[-1] == '"':
+        return Token.STRING
+    elif tok[0] in digits:
+        # TODO regex for number
+        return Token.NUMBER
+    elif tok[0] in identifier_start_chars:
+        is_valid = all([char in identifier_chars for char in tok[1:-1]])
+        if is_valid:
+            return Token.IDENTIFIER
+        else:
+            return Token.INVALID
+    else:
+        return Token.INVALID
+
+
 def convert_token(tok):
     # leave numbers, booleans (true, false), null alone
     # strings must get escaped "'some_string'"
@@ -97,3 +122,10 @@ def convert_token(tok):
             result.append('"' + k + '":')
         else:
             result.append('"' + tok + '"')
+
+
+def convert_json_lisp_to_json(prog):
+    p = split(prog, ",[]\{\} \n\t")
+    result = list()
+    for tok in p:
+        result.append(convert_token)
